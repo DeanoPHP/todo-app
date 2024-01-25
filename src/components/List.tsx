@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import ListItem from "./ListItem";
 
 function List() {
-  const [todo, setTodo] = useState([]);
+  const [todo, setTodo] = useState(() => {
+    const savedData = localStorage.getItem('todo')
+    const initDta = JSON.parse(savedData)
+    return initDta || []
+  });
   const [text, setText] = useState("");
 
   useEffect(() => {
@@ -17,7 +21,7 @@ function List() {
     }
 
     localStorage.setItem("todo", JSON.stringify(todo));
-  }, [todo]);
+  }, []);
 
   const onChange = (e) => {
     setText(e.target.value);

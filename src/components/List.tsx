@@ -1,22 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ListItem from "./ListItem";
 
 function List() {
-  const [todo, setTodo] = useState([]);
-  const [newTodo, setNewTodo] = useState("");
+  const [todo, setTodo] = useState(() => {
+    // getting stored value
+    const saved = localStorage.getItem("todo");
+    const initialValue = JSON.parse(saved);
+    return initialValue || [];
+  });
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("todo", JSON.stringify(todo));
+  }, [todo]);
+
+  useEffect(() => {
+    const todos = localStorage.getItem("todo");
+
+    if (todos) {
+      setTodo(JSON.parse(todos));
+    }
+
+    localStorage.setItem("todo", JSON.stringify(todo));
+  }, []);
 
   const onChange = (e) => {
-    setNewTodo(e.target.value);
+    setText(e.target.value);
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
 
-    if (newTodo.trim() !== "") {
-      setTodo([...todo, newTodo]);
+    if (text !== "") {
+      setTodo([...todo, text]);
     }
 
-    setNewTodo("");
+    setText("");
   };
 
   return (
@@ -29,8 +48,8 @@ function List() {
         <input
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           type="text"
-          id="newTodo"
-          value={newTodo}
+          id="text"
+          value={text}
           placeholder="Name"
           onChange={onChange}
         />
@@ -46,6 +65,7 @@ function List() {
             <ListItem key={index} todo={item} />
           ))}
         </ul>
+        <p></p>
       </div>
     </div>
   );
